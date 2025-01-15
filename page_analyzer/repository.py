@@ -5,15 +5,13 @@ class DataBase:
     def __init__(self, conn):
         self.conn = conn
 
-    
     def initialize_database(self):
         with self.conn.cursor() as cur:
-            with open('database.sql', 'r') as sql_file:
+            with open("database.sql", "r") as sql_file:
                 sql_script = sql_file.read()
             # Выполняем SQL-скрипт
             cur.execute(sql_script)
             self.conn.commit()
-
 
     def add(self, url):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -34,7 +32,6 @@ class DataBase:
             cur.execute("SELECT * FROM urls WHERE name=%s", (url_name,))
             url = cur.fetchone()
         return url
-
 
     def get_content(self):
         with self.conn.cursor() as cur:
@@ -57,7 +54,8 @@ class DataBase:
                 with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
                     cur.execute(
                         "SELECT id, created_at FROM url_checks WHERE url_id=%s ORDER BY created_at DESC",
-                        (url_id,))
+                        (url_id,),
+                    )
                     checks = cur.fetchall()
                 return checks
             except Exception as e:

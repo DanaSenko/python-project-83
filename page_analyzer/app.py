@@ -37,8 +37,10 @@ def add_url():
         flash("Некорректный URL", "danger")
         return render_template("index.html")
 
-    parsed_url = urlparse(url) # normalize url
-    normalized_url = urlunparse((parsed_url.scheme, parsed_url.hostname, "", "", "", ""))
+    parsed_url = urlparse(url)  # normalize url
+    normalized_url = urlunparse(
+        (parsed_url.scheme, parsed_url.hostname, "", "", "", "")
+    )
 
     existing_url = db.get_by_url(normalized_url)  # cheks if excist in db or not
 
@@ -46,7 +48,7 @@ def add_url():
         flash("Этот URL уже существует!", "info")
         return redirect(url_for("url_show", id=existing_url["id"]))
 
-    # if not exsist -->  
+    # if not exsist -->
     new_url = db.add(normalized_url)  # add into db normolized url
 
     flash("Страница успешно добавлена", "success")
@@ -88,7 +90,7 @@ def url_checks(id):
         if meta_tag and "content" in meta_tag.attrs:
             description = meta_tag["content"]
         else:
-            description=None
+            description = None
 
         db.add_check(
             url_id=id,
