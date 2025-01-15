@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+
+{% block sidebar %}
+    {% with flashed_messages = get_flashed_messages(with_categories=True) %}
+        {% if flashed_messages %}
+            {% for category, message in flashed_messages %}
+                <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock sidebar %}
+
+{% block content %}
+    <div>
+        <h1>Cайты</h1>
+        <table data-test="urls">
+            <div name="headers">
+                <div class="row row-cols-4 border">
+                    <div class="col border">ID</div>
+                    <div class="col border">Имя</div>
+                    <div class="col border">Последняя проверка</div>
+                    <div class="col border">Код ответа</div>
+                </div>
+            </div>
+            <div name="values">
+                {% for url in urls %}
+                <div class="row row-cols-4 border">
+                    <div class="col border">{{ url.id }}</div>
+                    <div class="col border">
+                        <a href="{{ url_for('url_show', id=url.id) }}">{{ url.name }}</a>
+                    </div>
+                    <div class="col border">{{ url.last_check if url.last_check else 'Не проверено' }}</div>
+                    <div class="col border">{{ url.status_code }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </table>
+    </div>
+{% endblock %}

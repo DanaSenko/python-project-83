@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+
+{% block sidebar %}
+    {% with flashed_messages = get_flashed_messages(with_categories=True) %}
+        {% if flashed_messages %}
+            {% for category, message in flashed_messages %}
+                <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock sidebar %}
+
+{% block content %}
+    <div data-test="url">
+        <h1>Сайт:{{ url.name }}</h1>
+        <div class="container text-left" class="border">
+            <div class="row row-cols-2">
+              <div class="col">ID</div>
+              <div class="col">{{ url.id }}</div>
+            </div>
+            <div class="row row-cols-2">
+                <div class="col">Имя</div>
+                <div class="col">{{ url.name }}</div>
+            </div>
+            <div class="row row-cols-2">
+                <div class="col">Дата создания</div>
+                <div class="col">{{ url.created_at }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h1>Проверки</h1>
+        <form action="{{ url_for('url_checks', id=url.id) }}" method="post" class="btn-group">
+            <button type="submit" class="btn btn-primary active" aria-current="page">Запустить проверку</button>
+        </form>
+        <div>
+            <div class="row row-cols-6 border">
+                <div class="col border">ID</div>
+                <div class="col border">Код ответа</div>
+                <div class="col border">h1</div>
+                <div class="col border">title</div>
+                <div class="col border">description</div>
+                <div class="col border">Дата создания</div>
+            </div>
+            {% for check in checks %} 
+            <div data-test="checks" class="row row-cols-6 border">
+                <div class="col border">{{ check.id }}</div>
+                <div class="col border">{{ check.status_code }}</div>
+                <div class="col border">{{ check.h1 }}</div>
+                <div class="col border">{{ check.title }}</div>
+                <div class="col border">{{ check.description }}</div>
+                <div class="col border">{{ check.created_at }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
