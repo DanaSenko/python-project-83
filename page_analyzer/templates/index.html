@@ -9,18 +9,27 @@
     {% endwith %}
 {% endblock sidebar %}
 {% block content %}
-    <div>
-        <h1>Анализатор страниц</h1>
-        <p>Бесплатно проверяйте сайты на SEO-пригодность</p>
-        <form action="{{ url_for('add_url') }}" method="post">
-            <input 
-                type="url" 
-                name="url" 
-                value="{{ url if url is defined else '' }}" 
-                placeholder="https://example.com" 
-                required 
-            >
-            <button type="submit" value="Search" class="btn btn-primary active" aria-current="page">Проверить</button>
-        </form>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="p-5 mb-4 bg-white rounded-3 shadow-sm">
+            <div class="container py-5 text-center">
+                <h1 class="display-5 fw-bold">Анализатор страниц</h1>
+                <p class="fs-4">Бесплатно проверяйте сайты на SEO-пригодность</p>
+                <form action="{{ url_for('add_url') }}" method="post" class="mt-4">
+                    <div class="input-group input-group-lg">
+                        <input 
+                            type="url" 
+                            name="url" 
+                            value="{{ url if url is defined else '' }}" 
+                            placeholder="https://example.com" 
+                            class="form-control" 
+                            required
+                        >
+                        <button type="submit" class="btn btn-primary">Проверить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+</body>
 {% endblock %}
