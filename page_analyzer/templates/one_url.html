@@ -11,49 +11,58 @@
 {% endblock sidebar %}
 
 {% block content %}
-    <div data-test="url">
-        <h1>Сайт:{{ url.name }}</h1>
-        <div class="container text-left" class="border">
-            <div class="row row-cols-2">
-              <div class="col">ID</div>
-              <div class="col">{{ url.id }}</div>
-            </div>
-            <div class="row row-cols-2">
-                <div class="col">Имя</div>
-                <div class="col">{{ url.name }}</div>
-            </div>
-            <div class="row row-cols-2">
-                <div class="col">Дата создания</div>
-                <div class="col">{{ url.created_at }}
-                </div>
-            </div>
-        </div>
-    </div>
-    <div>
-        <h1>Проверки</h1>
-        <form action="{{ url_for('url_checks', id=url.id) }}" method="post" class="btn-group">
-            <button type="submit" class="btn btn-primary active" aria-current="page">Запустить проверку</button>
-        </form>
-        <div>
-            <div class="row row-cols-6 border">
-                <div class="col border">ID</div>
-                <div class="col border">Код ответа</div>
-                <div class="col border">h1</div>
-                <div class="col border">title</div>
-                <div class="col border">description</div>
-                <div class="col border">Дата создания</div>
-            </div>
-            {% for check in checks %} 
-            <div data-test="checks" class="row row-cols-6 border">
-                <div class="col border">{{ check.id }}</div>
-                <div class="col border">{{ check.status_code }}</div>
-                <div class="col border">{{ check.h1 }}</div>
-                <div class="col border">{{ check.title }}</div>
-                <div class="col border">{{ check.description }}</div>
-                <div class="col border">{{ check.created_at }}</div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-{% endblock %}
+<div class="container mt-5">
+    <h1 class="mb-4">Сайт:{{ url.name }}</h1>
+    <table data-test="url" class="table table-bordered table-hover text-center">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Дата создания</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>{{ url.id }}</th>
+                <th>{{ url.name }}</th>
+                <th>{{ url.created_at }}</th>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
+<div class="container mt-5">
+    <h1 class="mb-4">Проверки</h1>
+
+    <!-- Форма для запуска проверки -->
+    <form action="{{ url_for('url_checks', id=url.id) }}" method="post" class="mb-3">
+        <button type="submit" class="btn btn-primary">Запустить проверку</button>
+    </form>
+
+    <!-- Таблица с проверками -->
+    <table class="table table-bordered table-hover text-center">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Код ответа</th>
+                <th scope="col">h1</th>
+                <th scope="col">title</th>
+                <th scope="col">description</th>
+                <th scope="col">Дата создания</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for check in checks %}
+            <tr data-test="checks">
+                <td>{{ check.id }}</td>
+                <td>{{ check.status_code }}</td>
+                <td>{{ check.h1 }}</td>
+                <td>{{ check.title }}</td>
+                <td>{{ check.description }}</td>
+                <td>{{ check.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

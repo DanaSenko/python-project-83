@@ -1,10 +1,14 @@
 {% extends 'layout.html' %}
 {% block sidebar %}
-    {% with flashed_message = get_flashed_messages(with_categories=True) %}
-        {% if flashed_message %}
-            {% for category, message in flashed_messages %}
-                <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div>
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert">
+                {{ message }}
+            </div>
             {% endfor %}
+        </div>
         {% endif %}
     {% endwith %}
 {% endblock sidebar %}

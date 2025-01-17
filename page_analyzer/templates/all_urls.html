@@ -11,29 +11,29 @@
 {% endblock sidebar %}
 
 {% block content %}
-    <div>
-        <h1>Cайты</h1>
-        <table data-test="urls">
-            <div name="headers">
-                <div class="row row-cols-4 border">
-                    <div class="col border">ID</div>
-                    <div class="col border">Имя</div>
-                    <div class="col border">Последняя проверка</div>
-                    <div class="col border">Код ответа</div>
-                </div>
-            </div>
-            <div name="values">
-                {% for url in urls %}
-                <div class="row row-cols-4 border">
-                    <div class="col border">{{ url.id }}</div>
-                    <div class="col border">
-                        <a href="{{ url_for('url_show', id=url.id) }}">{{ url.name }}</a>
-                    </div>
-                    <div class="col border">{{ url.last_check if url.last_check else 'Не проверено' }}</div>
-                    <div class="col border">{{ url.status_code }}</div>
-                </div>
-                {% endfor %}
-            </div>
-        </table>
-    </div>
+<div class="container mt-5">
+    <h1 class="mb-4">Сайты</h1>
+    <table data-test="urls" class="table table-bordered table-hover text-center">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Последняя проверка</th>
+                <th scope="col">Код ответа</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for url in urls %}
+            <tr>
+                <td>{{ url.id }}</td>
+                <td>
+                    <a href="{{ url_for('url_show', id=url.id) }}">{{ url.name }}</a>
+                </td>
+                <td>{{ url.last_check if url.last_check else '' }}</td>
+                <td>{{ url.status_code if url.status_code else ''}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
