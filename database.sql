@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS urls (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT current_timestamp
+    created_at DATE DEFAULT CURRENT_DATE
 );
 
 CREATE TABLE IF NOT EXISTS url_checks (
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS url_checks (
     h1 VARCHAR(255),
     title text,
     description text,
-    created_at TIMESTAMP DEFAULT current_timestamp,
+    created_at DATE DEFAULT CURRENT_DATE,
     CONSTRAINT fk_url
         FOREIGN KEY (url_id)
         REFERENCES urls (id)
