@@ -1,5 +1,4 @@
 from flask import (
-    get_flashed_messages,
     flash,
     Flask,
     redirect,
@@ -7,13 +6,15 @@ from flask import (
     request,
     url_for,
 )
-from urllib.parse import urlparse, urlunparse
+from page_analyzer.parser import parse_html
+from page_analyzer.utils import normalize_url, validate
 from dotenv import load_dotenv
 import os
 import psycopg2
-import validators
 from page_analyzer.repository import DataBase
-from bs4 import BeautifulSoup
+import requests
+from datetime import datetime
+
 
 load_dotenv()
 app = Flask(__name__)
@@ -33,29 +34,24 @@ def index():
 def add_url():
     url = request.form.get("url", "").strip()
 
-    if not validators.url(url) and len(url) < 255:  # check is valid or not
+    if not validate(url):
         flash("Некорректный URL", "danger")
         return render_template("index.html")
 
-    parsed_url = urlparse(url)  # normalize url
-    normalized_url = urlunparse(
-        (parsed_url.scheme, parsed_url.hostname, "", "", "", "")
-    )
+    normalized_url = normalize_url(url)
+    existing_url = db.get_by_url(normalized_url)
 
-    existing_url = db.get_by_url(normalized_url)  # cheks if excist in db or not
-
-    if existing_url:  # if yes --> return flash-message and redirect on this url's page
-        flash("Этот URL уже существует!", "info")
+    if existing_url:
+        flash("Страница уже существует", "info")
         return redirect(url_for("url_show", id=existing_url["id"]))
 
-    # if not exsist -->
-    new_url = db.add(normalized_url)  # add into db normolized url
+    new_url_id = db.add(normalized_url)
 
     flash("Страница успешно добавлена", "success")
-    return redirect(url_for("url_show", id=new_url["id"]))
+    return redirect(url_for("url_show", id=new_url_id))
 
 
-@app.route("/urls/<int:id>")  #
+@app.route("/urls/<int:id>")
 def url_show(id):
     url = db.get(id)
     checks = db.get_checks_by_url_id(id)
@@ -76,32 +72,22 @@ def url_checks(id):
         return redirect(url_for("all_urls"))
 
     try:
-        r = requests.get(url["name"])
-        response.raise_for_status()
-        html = response.text
-        soup = BeautifulSoup(html, "html.parser")
-
-        h1 = soup.h1.string if soup.h1.string else None
-        title = soup.title.string if soup.title.string else None
-        status_code = r.status_code
-        created_at = datetime.now()
-        meta_tag = soup.find("meta", attrs={"name": "description"})
-
-        if meta_tag and "content" in meta_tag.attrs:
-            description = meta_tag["content"]
-        else:
-            description = None
+        req = requests.get(url["name"])
+        req.raise_for_status()
+        html = req.text
+        parsed_data = parse_html(html)
+        created_at = datetime.today().date()
 
         db.add_check(
             url_id=id,
-            status_code=status_code,
-            h1=h1,
-            title=title,
-            description=description,
+            status_code=req.status_code,
+            h1=parsed_data["h1"],
+            title=parsed_data["title"],
+            description=parsed_data["description"],
             created_at=created_at,
         )
-        flash("Страница успешно проверена", "succuss")
-    except Exception as e:
-        flash(f"Произошла ошибка при проверке: {e}", "danger")
+        flash("Страница успешно проверена", "success")
+    except Exception:
+        flash("Произошла ошибка при проверке", "danger")
 
     return redirect(url_for("url_show", id=id))
