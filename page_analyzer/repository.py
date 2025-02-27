@@ -9,7 +9,9 @@ class DataBase:
         with self.conn.cursor() as cur:
             with open("database.sql", "r") as sql_file:
                 sql_script = sql_file.read()
-            cur.execute(sql_script)
+                for command in sql_script.split(";"):
+                    if command.strip():
+                        cur.execute(command)
             self.conn.commit()
 
     def add(self, url):
@@ -34,7 +36,7 @@ class DataBase:
         return url
 
     def get_content(self):
-        with self.conn.cursor() as cur:
+        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT * FROM urls ORDER BY created_at DESC")
             urls = cur.fetchall()
         return urls
@@ -57,19 +59,17 @@ class DataBase:
             self.conn.commit()
 
     def get_checks_by_url_id(self, url_id):
-        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
-            try:
-                with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    cur.execute(
-                        """SELECT * FROM url_checks WHERE url_id=%s
-                        ORDER BY id DESC""",
-                        (url_id,),
-                    )
-                    checks = cur.fetchall()
-                return checks
-            except Exception:
-                self.conn.rollback()
-                print("Ошибка при выполнении запроса")
+        try:
+            with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(
+                    """SELECT * FROM url_checks WHERE url_id=%s
+                    ORDER BY id DESC""",
+                    (url_id,),
+                )
+                return cur.fetchall()
+        except Exception as e:
+            print(f"Ошибка при выполнении запроса: {e}")
+            return []
 
     def get_all_urls_with_last_check(self):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
