@@ -159,7 +159,7 @@ requires-dist = [
     { name = "black", specifier = ">=24.10.0" },
     { name = "flake8", specifier = ">=7.1.1" },
     { name = "flask", specifier = ">=3.1.0" },
-    { name = "gunicorn", specifier = ">=23.0.0" },
+    { name = "gunicorn" },
     { name = "lxml", specifier = ">=5.3.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
