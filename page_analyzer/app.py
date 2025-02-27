@@ -22,7 +22,6 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 DATABASE_URL = os.getenv("DATABASE_URL")
 conn = psycopg2.connect(DATABASE_URL)
 db = DataBase(conn)
-db.initialize_database()
 
 
 @app.route("/")

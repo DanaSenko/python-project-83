@@ -5,15 +5,6 @@ class DataBase:
     def __init__(self, conn):
         self.conn = conn
 
-    def initialize_database(self):
-        with self.conn.cursor() as cur:
-            with open("database.sql", "r") as sql_file:
-                sql_script = sql_file.read()
-                for command in sql_script.split(";"):
-                    if command.strip():
-                        cur.execute(command)
-            self.conn.commit()
-
     def add(self, url):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
