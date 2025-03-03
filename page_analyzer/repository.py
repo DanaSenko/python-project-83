@@ -26,12 +26,6 @@ class DataBase:
             url = cur.fetchone()
         return url
 
-    def get_content(self):
-        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("SELECT * FROM urls ORDER BY created_at DESC")
-            urls = cur.fetchall()
-        return urls
-
     def add_check(
         self, url_id, status_code, h1, title, description, created_at
     ):
@@ -44,10 +38,13 @@ class DataBase:
                     h1, title,
                     description,
                     created_at)
-                VALUES (%s, %s, %s, %s, %s, %s)""",
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING id""",
                 (url_id, status_code, h1, title, description, created_at),
             )
+            id = cur.fetchone()["id"]
             self.conn.commit()
+        return id
 
     def get_checks_by_url_id(self, url_id):
         try:
