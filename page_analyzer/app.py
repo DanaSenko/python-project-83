@@ -31,7 +31,7 @@ def index():
     return render_template("index.html", url="")
 
 
-@app.post("/")
+@app.post("/urls")
 def add_url():
     url = request.form.get("url", "").strip()
 
