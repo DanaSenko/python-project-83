@@ -6,6 +6,7 @@ from flask import (
     request,
     url_for,
 )
+from page_analyzer.db import get_db, close_db
 from page_analyzer.parser import parse_html
 from page_analyzer.utils import normalize_url, validate
 from dotenv import load_dotenv
@@ -18,10 +19,9 @@ from datetime import datetime
 
 load_dotenv()
 app = Flask(__name__)
+with app.app_context():
+    db = DataBase(get_db())
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-DATABASE_URL = os.getenv("DATABASE_URL")
-conn = psycopg2.connect(DATABASE_URL)
-db = DataBase(conn)
 
 
 @app.route("/")
