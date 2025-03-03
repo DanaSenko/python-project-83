@@ -6,22 +6,24 @@ from flask import (
     request,
     url_for,
 )
-from page_analyzer.db import get_db, close_db
-from page_analyzer.parser import parse_html
-from page_analyzer.utils import normalize_url, validate
+from .db import get_db, close_db
+from .parser import parse_html
+from .utils import normalize_url, validate
 from dotenv import load_dotenv
 import os
 import psycopg2
-from page_analyzer.repository import DataBase
+from .repository import DataBase
 import requests
 from datetime import datetime
 
 
 load_dotenv()
+
 app = Flask(__name__)
-with app.app_context():
-    db = DataBase(get_db())
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+
+"""close connection after each request"""
+app.teardown_appcontext(close_db)
 
 
 @app.route("/")
@@ -37,6 +39,7 @@ def add_url():
         flash("Некорректный URL", "danger")
         return render_template("index.html")
 
+    db = DataBase(get_db())
     normalized_url = normalize_url(url)
     existing_url = db.get_by_url(normalized_url)
 
@@ -52,6 +55,7 @@ def add_url():
 
 @app.route("/urls/<int:id>")
 def url_show(id):
+    db = DataBase(get_db())
     url = db.get(id)
     checks = db.get_checks_by_url_id(id)
     return render_template("one_url.html", url=url, checks=checks)
@@ -59,12 +63,14 @@ def url_show(id):
 
 @app.route("/urls")
 def all_urls():
+    db = DataBase(get_db())
     urls = db.get_all_urls_with_last_check()
     return render_template("all_urls.html", urls=urls)
 
 
 @app.post("/urls/<int:id>/checks")
 def url_checks(id):
+    db = DataBase(get_db())
     url = db.get(id)
     if not url:
         flash("URL не найден", "danger")
