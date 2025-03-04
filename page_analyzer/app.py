@@ -86,7 +86,7 @@ def url_checks(id):
         return redirect(url_for("all_urls"))
 
     try:
-        response = requests.get(url["name"])
+        response = requests.get(url.name)
         page_data = extract_page_data(response)
         created_at = datetime.today().date()
 
