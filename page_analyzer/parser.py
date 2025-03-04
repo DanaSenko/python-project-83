@@ -1,17 +1,18 @@
 from bs4 import BeautifulSoup
+from requests import Response
 
 
-def parse_html(html_text):
-    soup = BeautifulSoup(html_text, "lxml")
-    h1_tag = soup.h1.get_text(strip=True) if soup.h1 else ""
+def extract_page_data(response: Response):
+    soup = BeautifulSoup(response.text, 'html.parser')
 
-    title_tag = soup.title.get_text(strip=True) if soup.title else ""
+    h1_tag = soup.find('h1')
+    title_tag = soup.find('title')
+    meta_description_tag = soup.find('meta', attrs={'name': 'description'})
 
-    meta_tag = soup.find("meta", attrs={"name": "description"})
-    description = (
-        meta_tag["content"].strip()
-        if meta_tag and "content" in meta_tag.attrs
-        else ""
-    )
-
-    return {"title": title_tag, "h1": h1_tag, "description": description}
+    return {
+        'h1': h1_tag.text[:255] if h1_tag else '',
+        'title': title_tag.text[:255] if title_tag else '',
+        'status_code': response.status_code,
+        'meta_description': (meta_description_tag.get('content', '')[:255]
+                             if meta_description_tag else '')
+    }
