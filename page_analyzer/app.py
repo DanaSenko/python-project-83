@@ -11,7 +11,6 @@ from .parser import parse_html
 from .utils import normalize_url, validate
 from dotenv import load_dotenv
 import os
-import psycopg2
 from .repository import DataBase
 import requests
 from datetime import datetime
