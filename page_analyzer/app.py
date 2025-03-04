@@ -37,7 +37,7 @@ def add_url():
 
     if not validate(url):
         flash("Некорректный URL", "danger")
-        return render_template("index.html")
+        return render_template("index.html"), 422
 
     db = DataBase(get_db())
     normalized_url = normalize_url(url)
