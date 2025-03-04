@@ -1,12 +1,6 @@
 from psycopg2.extras import NamedTupleCursor
 from flask import g
 import psycopg2
-import os
-from dotenv import load_dotenv
-
-# load_dotenv()
-
-# DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 def get_db(db_url):
@@ -25,7 +19,7 @@ class DataBase:
     def __init__(self, conn):
         self.conn = conn
 
-    def commit(self, conn):
+    def commit(self):
         self.conn.commit()
 
     def add_url(self, url):

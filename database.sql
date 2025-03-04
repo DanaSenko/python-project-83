@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS urls (
 
 CREATE TABLE IF NOT EXISTS url_checks (
     id SERIAL PRIMARY KEY,
-    url_id INTEGER REFERENCES ON urls(id) ON DELETE CASCADE,
+    url_id INTEGER REFERENCES urls(id) ON DELETE CASCADE,
     status_code INTEGER,
     h1 varchar(255),
     title varchar(255),
