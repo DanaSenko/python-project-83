@@ -1,35 +1,56 @@
-from psycopg2.extras import RealDictCursor
+from psycopg2.extras import NamedTupleCursor
+from flask import g
+import psycopg2
+import os
+from dotenv import load_dotenv
+
+# load_dotenv()
+
+# DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+def get_db(db_url):
+    if 'db' not in g:
+        g.db = psycopg2.connect(db_url)
+    return g.db
+
+
+def close_db(exception):
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
 
 
 class DataBase:
     def __init__(self, conn):
         self.conn = conn
 
-    def add(self, url):
-        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+    def commit(self, conn):
+        self.conn.commit()
+
+    def add_url(self, url):
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             cur.execute(
                 "INSERT INTO urls (name) VALUES (%s) RETURNING id", (url,)
             )
-            id = cur.fetchone()["id"]
-            self.conn.commit()
+            id = cur.fetchone().id
+        self.commit()
         return id
 
-    def get(self, id):
-        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+    def get_url_by_id(self, id):
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             cur.execute("SELECT * FROM urls WHERE id=%s", (id,))
-            url = cur.fetchone()
-        return url
+            return cur.fetchone()
 
     def get_by_url(self, url_name):
-        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             cur.execute("SELECT * FROM urls WHERE name=%s", (url_name,))
-            url = cur.fetchone()
-        return url
+            return cur.fetchone()
 
-    def add_check(
+    def add_check_of_url(
         self, url_id, status_code, h1, title, description, created_at
     ):
-        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             cur.execute(
                 """
                 INSERT INTO url_checks (
@@ -42,13 +63,13 @@ class DataBase:
                 RETURNING id""",
                 (url_id, status_code, h1, title, description, created_at),
             )
-            id = cur.fetchone()["id"]
-            self.conn.commit()
+            id = cur.fetchone().id
+        self.commit()
         return id
 
     def get_checks_by_url_id(self, url_id):
         try:
-            with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+            with self.conn.cursor(cursor_factory=NamedTupleCursor) as cur:
                 cur.execute(
                     """SELECT * FROM url_checks WHERE url_id=%s
                     ORDER BY id DESC""",
@@ -60,7 +81,7 @@ class DataBase:
             return []
 
     def get_all_urls_with_last_check(self):
-        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             cur.execute(
                 """
             SELECT
